@@ -24,7 +24,7 @@ struct LocalFileInfo
    LocalFileInfo	*next;
    int				filecount; /*当是目录时，存储目录下文件的数量。递归统计。*/
 
-   void				*userdata;
+   void				*userData;
 };
 
 /*释放掉LocalFileInfo对象*/

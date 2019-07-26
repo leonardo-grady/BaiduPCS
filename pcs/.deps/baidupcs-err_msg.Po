@@ -1,0 +1,3 @@
+pcs/baidupcs-err_msg.o: pcs/err_msg.c /usr/include/stdc-predef.h
+
+/usr/include/stdc-predef.h:

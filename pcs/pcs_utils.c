@@ -15,7 +15,7 @@
 #include "pcs_mem.h"
 #include "pcs_utils.h"
 
-PCS_API PcsBool pcs_isLittleEndian()
+PCS_API pcsBool pcs_isLittleEndian()
 {
 	union w {
 		int a;
@@ -25,7 +25,7 @@ PCS_API PcsBool pcs_isLittleEndian()
 	return (c.b == 1);
 }
 
-PCS_API PcsBool pcs_isBigEndian()
+PCS_API pcsBool pcs_isBigEndian()
 {
 	union w {
 		int a;
@@ -216,17 +216,17 @@ PCS_API int pcs_utils_strcmpi(const char *str1, const char *str2)
 	return (*p1) - (*p2);
 }
 
-PCS_API PcsBool pcs_utils_streq(const char *str1, const char *str2, int len)
+PCS_API pcsBool pcs_utils_streq(const char *str1, const char *str2, int len)
 {
 	int i = 0;
 	const char *p1 = str1,
 		*p2 = str2;
 	while((*p1) && (*p2) && (len == -1 || i < len)) {
-		if ((*p1) != (*p2)) return PcsFalse;
+		if ((*p1) != (*p2)) return pcsFalse;
 		p1++;
 		p2++;
 	}
-	return PcsTrue;
+	return pcsTrue;
 }
 
 

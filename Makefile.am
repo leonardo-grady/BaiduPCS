@@ -26,6 +26,7 @@ pcs_src = pcs/cJSON.c \
 
 shell_src = shell.c \
 			arg.c \
+			cmd.c \
 			dir.c \
 			rb_tree/misc.c \
 			rb_tree/red_black_tree.c \
@@ -67,6 +68,7 @@ noinst_HEADERS =  pcs/BaiduPCS.h \
 				  utils.h \
 				  version.h \
 				  arg.h \
+				  cmd.h \
 				  dir.h \
 				  hashtable.h \
 				  cache.h \

@@ -508,6 +508,7 @@ const char *filename(const char *path)
 	const char *p;
 	p = path;
 	p += strlen(p);
+
 	while (p > path && *p != '/' && *p != '\\') p--;
 	if (*p == '/' || *p == '\\') p++;
 	return p;

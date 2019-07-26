@@ -15,7 +15,8 @@ struct args
 };
 
 /*解析参数*/
-int parse_arg(struct args *arg, int argc, char *argv[], char *(*utf8)(const char *s));
+int parse_args(struct args *arg, int argc, char *argv[], char *(*utf8)(const char *s));
+int parse_cmds(struct args *arg, int argc, char *argv[], char *(*utf8)(const char *s));
 void free_args(struct args *arg);
 /*
 删除一个选项。

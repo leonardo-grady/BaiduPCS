@@ -1,0 +1,3 @@
+pcs/err_msg.lo: pcs/err_msg.c /usr/include/stdc-predef.h
+
+/usr/include/stdc-predef.h:

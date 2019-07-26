@@ -30,7 +30,7 @@ typedef void (*PcsHttpResponseFunction)(unsigned char *ptr, size_t size, void *s
 
 /*
  * 设定该回调后，Pcs每上传或下载一段字节序到网络中时，则调用该回调。利用该回调可实现上传时的进度条
- * 注意：只有设定PCS_OPTION_PROGRESS的值为PcsTrue后才会启用进度条
+ * 注意：只有设定PCS_OPTION_PROGRESS的值为pcsTrue后才会启用进度条
  *   dltotal  从网络中需要下载多少字节
  *   dlnow    从网络中已经下载多少字节
  *   ultotal  需要上传多少字节
@@ -160,7 +160,7 @@ PCS_API int pcs_http_get_response_size(PcsHttp handle);
  * Not need call pcs_free(void *) to free the return value.
  * The memory will auto free when call pcs_http_destroy
 */
-PCS_API char *pcs_http_get(PcsHttp handle, const char *url, PcsBool follow_location);
+PCS_API char *pcs_http_get(PcsHttp handle, const char *url, pcsBool follow_location);
 /*
  * 向服务器发送一个GET请求。
  *   url             服务器地址
@@ -169,7 +169,7 @@ PCS_API char *pcs_http_get(PcsHttp handle, const char *url, PcsBool follow_locat
  * Not need call pcs_free(void *) to free the return value.
  * The memory will auto free when call pcs_http_destroy
 */
-PCS_API char *pcs_http_get_raw(PcsHttp handle, const char *url, PcsBool follow_location, size_t *sz);
+PCS_API char *pcs_http_get_raw(PcsHttp handle, const char *url, pcsBool follow_location, size_t *sz);
 /*
  * 向服务器发送一个POST请求。
  *   url             服务器地址
@@ -179,7 +179,7 @@ PCS_API char *pcs_http_get_raw(PcsHttp handle, const char *url, PcsBool follow_l
  * Not need call pcs_free(void *) to free the return value.
  * The memory will auto free when call pcs_http_destroy
 */
-PCS_API char *pcs_http_post(PcsHttp handle, const char *url, char *post_data, PcsBool follow_location);
+PCS_API char *pcs_http_post(PcsHttp handle, const char *url, char *post_data, pcsBool follow_location);
 
 /*
  * 向服务器发送一个GET请求。当获取到服务器返回数据后，调用PCS_HTTP_OPTION_HTTP_WRITE_FUNCTION传入的函数来写入内容。
@@ -189,10 +189,10 @@ PCS_API char *pcs_http_post(PcsHttp handle, const char *url, char *post_data, Pc
  * Not need call pcs_free(void *) to free the return value.
  * The memory will auto free when call pcs_http_destroy
 */
-PCS_API PcsBool pcs_http_get_download(PcsHttp handle, const char *url, PcsBool follow_location, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length);
+PCS_API pcsBool pcs_http_get_download(PcsHttp handle, const char *url, pcsBool follow_location, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length);
 
 /*获取待下载文件的大小*/
-PCS_API int64_t pcs_http_get_download_filesize(PcsHttp handle, const char *url, PcsBool follow_location);
+PCS_API int64_t pcs_http_get_download_filesize(PcsHttp handle, const char *url, pcsBool follow_location);
 
 /*
  * 向PcsHttpForm对象中添加一个本地文件。
@@ -201,9 +201,9 @@ PCS_API int64_t pcs_http_get_download_filesize(PcsHttp handle, const char *url, 
  *   filename    该文件的本地文件名，PcsHttpForm将从该路径读取文件内容
  *   simulate_filename 发送到服务器的文件名。可以指定不同于filename的名字，服务器收到的本地文件名将是simulate_filename而不是filename
  * 例： pcs_http_form_addfile(pcs->http, &form, "file", local_filename, "sample.dat"); //参数名是 "file"，文件内容存储在local_filename指定的文件中，服务器接收到的文件名字是"sample.dat"
- * 添加成功后，返回PcsTrue，否则返回PcsFalse。
+ * 添加成功后，返回pcsTrue，否则返回pcsFalse。
 */
-PCS_API PcsBool pcs_http_form_addfile(PcsHttp handle, PcsHttpForm *post, const char *param_name, 
+PCS_API pcsBool pcs_http_form_addfile(PcsHttp handle, PcsHttpForm *post, const char *param_name, 
 									  const char *filename, const char *simulate_filename);
 /*
 * 向PcsHttpForm对象中添加一个内存文件。程序将调用
@@ -216,13 +216,13 @@ PCS_API PcsBool pcs_http_form_addfile(PcsHttp handle, PcsHttpForm *post, const c
 *               end-of-file to the library and cause it to stop the current transfer.
 *   userdata    传递到read_func函数第4个参数的值
 *   content_size 期望传递到服务器的内容长度。将会添加到HTTP头中。
-* 添加成功后，返回PcsTrue，否则返回PcsFalse。
+* 添加成功后，返回pcsTrue，否则返回pcsFalse。
 */
-PCS_API PcsBool pcs_http_form_addbufferfile(PcsHttp handle, PcsHttpForm *post, const char *param_name, const char *simulate_filename,
+PCS_API pcsBool pcs_http_form_addbufferfile(PcsHttp handle, PcsHttpForm *post, const char *param_name, const char *simulate_filename,
 	size_t(*read_func)(void *ptr, size_t size, size_t nmemb, void *userdata), void *userdata, size_t content_size);
 
 /* 同pcs_http_form_addfile，只不过是从内存中读取文件内容。 */
-PCS_API PcsBool pcs_http_form_addbuffer(PcsHttp handle, PcsHttpForm *post, const char *param_name,
+PCS_API pcsBool pcs_http_form_addbuffer(PcsHttp handle, PcsHttpForm *post, const char *param_name,
 										const char *buffer, long buffer_size, const char *simulate_filename);
 /*释放掉PcsHttpForm资源*/
 PCS_API void pcs_http_form_destroy(PcsHttp handle, PcsHttpForm post);
@@ -238,7 +238,7 @@ PCS_API void pcs_http_form_destroy(PcsHttp handle, PcsHttpForm post);
  * Not need call pcs_free(void *) to free the return value.
  * The memory will auto free when call pcs_http_destroy
 */
-PCS_API char *pcs_post_httpform(PcsHttp handle, const char *url, PcsHttpForm data, curl_off_t max_speed, PcsBool follow_location);
+PCS_API char *pcs_post_httpform(PcsHttp handle, const char *url, PcsHttpForm data, curl_off_t max_speed, pcsBool follow_location);
 
 /*以字符串形式返回所有Cookie数据。*/
 PCS_API char *pcs_http_cookie_data(PcsHttp handle);

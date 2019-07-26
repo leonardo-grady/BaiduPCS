@@ -15,13 +15,13 @@ typedef struct PcsFileInfo {
 	time_t		local_mtime;
 	int64_t		size;
 	int			category;
-	PcsBool		isdir;
-	PcsBool		dir_empty;
-	PcsBool		empty;
+	pcsBool		isdir;
+	pcsBool		dir_empty;
+	pcsBool		empty;
 	char		*md5;
 	char		*dlink;
 	char		**block_list; /*  文件所有分片的md5数组json字符串, 只有 pcs_meta() 设置该值 */
-	PcsBool		ifhassubdir; /* 是否含有子目录, 只有 pcs_meta() 设置该值  */
+	pcsBool		ifhassubdir; /* 是否含有子目录, 只有 pcs_meta() 设置该值  */
 
 	int			user_flag;
 
@@ -44,7 +44,7 @@ typedef struct PcsFileInfoList {
 
 /*网盘文件元数据列表的迭代器*/
 typedef struct PcsFileInfoListIterater {
-	PcsBool				invert;
+	pcsBool				invert;
 	PcsFileInfoList		*list;
 	PcsFileInfoListItem	*cursor;
 	PcsFileInfo			*current;
@@ -69,8 +69,8 @@ PCS_API void pcs_filist_combin(PcsFileInfoList *list, PcsFileInfoList *src);
 /*
  * invert - 是否从后向前迭代
  */
-PCS_API void pcs_filist_iterater_init(PcsFileInfoList *list, PcsFileInfoListIterater *iterater, PcsBool invert);
-PCS_API PcsBool pcs_filist_iterater_next(PcsFileInfoListIterater *iterater);
+PCS_API void pcs_filist_iterater_init(PcsFileInfoList *list, PcsFileInfoListIterater *iterater, pcsBool invert);
+PCS_API pcsBool pcs_filist_iterater_next(PcsFileInfoListIterater *iterater);
 
 
 #endif

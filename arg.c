@@ -50,7 +50,7 @@ static void free_opt(void *p)
 }
 
 /*解析参数*/
-int parse_arg(struct args *arg, int argc, char *argv[], char *(*s2utf8)(const char *s))
+int parse_args(struct args *arg, int argc, char *argv[], char *(*s2utf8)(const char *s))
 {
 	int i, j = 0;
 	char *p, *op, *val;
@@ -68,6 +68,53 @@ int parse_arg(struct args *arg, int argc, char *argv[], char *(*s2utf8)(const ch
 	if (arg->optc > 0) arg->opts = ht_create((int)((float)arg->optc * HASH_EXTEND_MULTIPLIER), 0, &free_opt);
 	if (arg->argc > 0) arg->argv = (char **)pcs_malloc(arg->argc * sizeof(char *));
 	for (i = 1; i < argc; ++i) {
+		p = argv[i];
+		if (*p == '-') {
+			p++;
+			if (*p == '-') {
+				p++;
+				val = findchar(p, '=');
+				if (ht_has(arg->opts, p, val - p)) return -1; /*重复指定参数*/
+				if (ht_add(arg->opts, p, val - p, (*val) == '=' ? (s2utf8 ? s2utf8(val + 1) : arg_strdup(val + 1)) : NULL))
+					return -1; /*添加到哈希表中失败*/
+			}
+			else {
+				op = p;
+				while (*op) {
+					if (ht_has(arg->opts, op, 1)) return -1; /*重复指定参数*/
+					if (ht_add(arg->opts, op, 1, NULL))
+						return -1; /*添加到哈希表中失败*/
+					op++;
+				}
+			}
+		}
+		else if (!arg->cmd) {
+			arg->cmd = p;
+		}
+		else {
+			arg->argv[j++] = s2utf8 ? s2utf8(p) : arg_strdup(p);
+		}
+	}
+	return 0;
+}
+
+int parse_cmds(struct args *arg, int argc, char *argv[], char *(*s2utf8)(const char *s))
+{
+	int i, j = 0;
+	char *p, *op, *val;
+	for (i = 0; i < argc; ++i) {
+		p = argv[i];
+		if (*p == '-') {
+			arg->optc++;
+		}
+		else {
+			arg->argc++;
+		}
+	}
+	if (arg->argc > 0) arg->argc--;
+	if (arg->optc > 0) arg->opts = ht_create((int)((float)arg->optc * HASH_EXTEND_MULTIPLIER), 0, &free_opt);
+	if (arg->argc > 0) arg->argv = (char **)pcs_malloc(arg->argc * sizeof(char *));
+	for (i = 0; i < argc; ++i) {
 		p = argv[i];
 		if (*p == '-') {
 			p++;
@@ -240,35 +287,41 @@ int test_varg(struct args *arg, int minArgc, int maxArgc, va_list ap)
 {
 	int co = 0;
 	const char *opt;
-	if (arg->argc < minArgc || arg->argc > maxArgc) return -1;
-	if (!arg->opts) return 0;
+
+	if (arg->argc < minArgc || arg->argc > maxArgc)
+        return -1;
+	if (!arg->opts)
+        return 0;
 	while ((opt = va_arg(ap, const char *)) != NULL) {
 		if (ht_has(arg->opts, opt, -1))
 			co++;
 	}
+
 	return arg->opts->count - co;
 }
 
 /*
-测试arg是否正确。
- arg     -
- minArgc - 允许的最少参数
- maxArgc - 允许的最多参数
- ...     - 支持的所有可选项，以NULL结束
-如果测试通过则返回0，否则返回非零值
-例：
+   测试arg是否正确。
+   arg     -
+   minArgc - 允许的最少参数
+   maxArgc - 允许的最多参数
+   ...     - 支持的所有可选项，以NULL结束
+   如果测试通过则返回0，否则返回非零值
+   例：
    if (test_arg(arg, 0, 1, "d", "e", "r", "config", NULL)) {
-        printf("Wrong Arguments\n");
-		return -1;
+   printf("Wrong Arguments\n");
+   return -1;
    }
-*/
+   */
 int test_arg(struct args *arg, int minArgc, int maxArgc, ...)
 {
 	int rc = 0;
 	va_list ap;
+
 	va_start(ap, maxArgc);
 	rc = test_varg(arg, minArgc, maxArgc, ap);
 	va_end(ap);
+
 	return rc;
 }
 

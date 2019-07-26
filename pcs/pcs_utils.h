@@ -7,9 +7,9 @@
 #include "pcs_slist.h"
 
 /*返回当前处理器是否是大端模式*/
-PCS_API PcsBool pcs_isLittleEndian();
+PCS_API pcsBool pcs_isLittleEndian();
 /*返回当前处理器是否是小端模式*/
-PCS_API PcsBool pcs_isBigEndian();
+PCS_API pcsBool pcs_isBigEndian();
 
 /*原因复制一份字符串。返回值需要调用pcs_free()*/
 PCS_API char *pcs_utils_strdup(const char *str);
@@ -31,8 +31,8 @@ PCS_API char *pcs_utils_basedir(const char *path);
 PCS_API char *pcs_utils_filename(const char *path);
 /*忽略大小写比较两个字符串。 str1 < str2时返回负数；str1 == str2时返回0；str1 > str2时返回正数。*/
 PCS_API int pcs_utils_strcmpi(const char *str1, const char *str2);
-/*判断两字符串是否相等。相等返回PcsTrue，否则返回PcsFalse。只比较len指定的长度。*/
-PCS_API PcsBool pcs_utils_streq(const char *str1, const char *str2, int len);
+/*判断两字符串是否相等。相等返回pcsTrue，否则返回pcsFalse。只比较len指定的长度。*/
+PCS_API pcsBool pcs_utils_streq(const char *str1, const char *str2, int len);
 
 /*计算字节的MD5值*/
 PCS_API const unsigned char *pcs_md5_bytes_raw(const unsigned char* bytes, int len);

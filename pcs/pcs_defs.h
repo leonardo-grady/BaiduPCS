@@ -86,9 +86,9 @@ typedef unsigned __int64 uint64_t;
 #define ToString(x) #x  
 #define Xstr(x) ToString(x)
 
-typedef unsigned char PcsBool;
-#    define PcsTrue  1
-#    define PcsFalse 0
+typedef unsigned char pcsBool;
+#    define pcsTrue  1
+#    define pcsFalse 0
 
 
 #endif

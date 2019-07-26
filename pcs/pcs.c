@@ -162,14 +162,14 @@ PCS_API void pcs_cat_serrmsg(Pcs handle, const char *errmsg)
 }
 
 
-//static inline void pcs_set_errmsg(Pcs handle, PcsRes error)
+//static inline void pcs_set_errmsg(Pcs handle, pcsRes error)
 //{
 //	if (error != PCS_NONE)
 //		pcs_set_error(handle, pcs_strerror(handle, error));
 //}
 
 /*调用用户注册的验证码函数来让用户识别验证码图片，并让用户输入识别结果*/
-PcsRes pcs_get_captcha(Pcs handle, const char *code_string, char *captcha, int captchaSize)
+pcsRes pcs_get_captcha(Pcs handle, const char *code_string, char *captcha, int captchaSize)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	char *url, *img;
@@ -181,7 +181,7 @@ PcsRes pcs_get_captcha(Pcs handle, const char *code_string, char *captcha, int c
 		return PCS_NO_CAPTCHA_FUNC;
 	}
 	url = pcs_utils_sprintf(URL_CAPTCHA "%s", code_string);
-	img = pcs_http_get_raw(pcs->http, url, PcsTrue, &imgsz); 
+	img = pcs_http_get_raw(pcs->http, url, pcsTrue, &imgsz); 
 	if (!img) {
 		pcs_set_errmsg(handle, "Can't get captch image from the server. url: %s. Error message: %s", url, pcs_http_strerror(pcs->http));
 		pcs_free(url);
@@ -197,7 +197,7 @@ PcsRes pcs_get_captcha(Pcs handle, const char *code_string, char *captcha, int c
 }
 
 /* 调用用户注册的输入函数来让用户输入数据 */
-PcsRes pcs_input(Pcs handle, const char *tips, char *value, size_t valueSize)
+pcsRes pcs_input(Pcs handle, const char *tips, char *value, size_t valueSize)
 {
     struct pcs *pcs = (struct pcs *)handle;
     memset(value, 0, valueSize);
@@ -473,7 +473,7 @@ static PcsFileInfo *pcs_parse_fileinfo(cJSON * item)
 
 	val = cJSON_GetObjectItem(item, "isdir");
 	if (val)
-		fi->isdir = val->valueint ? PcsTrue : PcsFalse;
+		fi->isdir = val->valueint ? pcsTrue : pcsFalse;
 
 	val = cJSON_GetObjectItem(item, "category");
 	if (val)
@@ -485,15 +485,15 @@ static PcsFileInfo *pcs_parse_fileinfo(cJSON * item)
 
 	val = cJSON_GetObjectItem(item, "dir_empty");
 	if (val)
-		fi->dir_empty = val->valueint ? PcsTrue : PcsFalse;
+		fi->dir_empty = val->valueint ? pcsTrue : pcsFalse;
 
 	val = cJSON_GetObjectItem(item, "empty");
 	if (val)
-		fi->empty = val->valueint ? PcsTrue : PcsFalse;
+		fi->empty = val->valueint ? pcsTrue : pcsFalse;
 
 	val = cJSON_GetObjectItem(item, "ifhassubdir");
 	if (val)
-		fi->ifhassubdir = val->valueint ? PcsTrue : PcsFalse;
+		fi->ifhassubdir = val->valueint ? pcsTrue : pcsFalse;
 
 	val = cJSON_GetObjectItem(item, "md5");
 	if (val)
@@ -558,7 +558,7 @@ static PcsFileInfoList *pcs_pan_api_1(Pcs handle, const char *action, ...)
 		pcs_set_errmsg(handle, "Can't build url.");
 		return NULL;
 	}
-	html = pcs_http_get(pcs->http, url, PcsTrue);
+	html = pcs_http_get(pcs->http, url, pcsTrue);
 	pcs_free(url);
 	if (!html) {
 		errmsg = pcs_http_strerror(pcs->http);
@@ -794,10 +794,10 @@ static PcsPanApiRes *pcs_pan_api_filemanager(Pcs handle, const char *opera, cons
 	PcsPanApiRes *res = NULL;
 	PcsPanApiResInfoList *tail, *ri;
 
-	PcsBool err_no_space = PcsFalse, //errno = -10 剩余空间不足
-		err_target_not_exist = PcsFalse, //errno = -8 文件已存在于目标文件夹中
-		err_src_file_not_exist = PcsFalse, //errno = -9 文件不存在
-		err_has_succ_items = PcsFalse; //是否存在处理成功的文件项
+	pcsBool err_no_space = pcsFalse, //errno = -10 剩余空间不足
+		err_target_not_exist = pcsFalse, //errno = -8 文件已存在于目标文件夹中
+		err_src_file_not_exist = pcsFalse, //errno = -9 文件不存在
+		err_has_succ_items = pcsFalse; //是否存在处理成功的文件项
 
 	url = pcs_build_pan_api_url(handle, "filemanager",
 		"opera", opera,
@@ -813,7 +813,7 @@ static PcsPanApiRes *pcs_pan_api_filemanager(Pcs handle, const char *opera, cons
 		pcs_free(url);
 		return NULL;
 	}
-	html = pcs_http_post(pcs->http, url, postdata, PcsTrue);
+	html = pcs_http_post(pcs->http, url, postdata, pcsTrue);
 	pcs_free(url);
 	pcs_free(postdata);
 	if (!html) {
@@ -875,16 +875,16 @@ static PcsPanApiRes *pcs_pan_api_filemanager(Pcs handle, const char *opera, cons
 		}
 		switch (ri->info.error) {
 		case 0: //I:处理成功
-			err_has_succ_items = PcsTrue;
+			err_has_succ_items = pcsTrue;
 			break;
 		case -8: //D:文件已存在于目标文件夹中
-			err_target_not_exist = PcsTrue;
+			err_target_not_exist = pcsTrue;
 			break;
 		case -9: //C:文件不存在
-			err_src_file_not_exist = PcsTrue;
+			err_src_file_not_exist = pcsTrue;
 			break;
 		case -10: //G:剩余空间不足
-			err_no_space = PcsTrue;
+			err_no_space = pcsTrue;
 			break;
 		}
 	}
@@ -979,7 +979,7 @@ static PcsFileInfo *pcs_upload_form(Pcs handle, const char *path, PcsHttpForm fo
 		pcs_set_errmsg(handle, "Can't build the url.");
 		return NULL;
 	}
-	html = pcs_post_httpform(pcs->http, url, form, max_speed, PcsTrue);
+	html = pcs_post_httpform(pcs->http, url, form, max_speed, pcsTrue);
 	pcs_free(url);
 	if (!html) {
 		const char *errmsg = pcs_http_strerror(pcs->http);
@@ -1033,7 +1033,7 @@ static PcsFileInfo *pcs_upload_slice_form(Pcs handle, PcsHttpForm form, curl_off
 		pcs_set_errmsg(handle, "Can't build the url.");
 		return NULL;
 	}
-	html = pcs_post_httpform(pcs->http, url, form, max_speed, PcsTrue);
+	html = pcs_post_httpform(pcs->http, url, form, max_speed, pcsTrue);
 	pcs_free(url);
 	if (!html) {
 		const char *errmsg = pcs_http_strerror(pcs->http);
@@ -1294,9 +1294,9 @@ PCS_API const char *pcs_strerror(Pcs handle)
 	return pcs->errmsg;
 }
 
-PCS_API PcsRes pcs_setopt(Pcs handle, PcsOption opt, void *value)
+PCS_API pcsRes pcs_setopt(Pcs handle, PcsOption opt, void *value)
 {
-	PcsRes res = PCS_OK;
+	pcsRes res = PCS_OK;
 	struct pcs *pcs = (struct pcs *)handle;
 	switch (opt)
 	{
@@ -1360,9 +1360,9 @@ PCS_API PcsRes pcs_setopt(Pcs handle, PcsOption opt, void *value)
 	return res;
 }
 
-PCS_API PcsRes pcs_setopts(Pcs handle, ...)
+PCS_API pcsRes pcs_setopts(Pcs handle, ...)
 {
-	PcsRes res = PCS_OK;
+	pcsRes res = PCS_OK;
 	PcsOption opt;
 	void *val;
     va_list args;
@@ -1377,14 +1377,16 @@ PCS_API PcsRes pcs_setopts(Pcs handle, ...)
 	return res;
 }
 
-PCS_API PcsRes pcs_islogin(Pcs handle)
+PCS_API pcsRes pcs_islogin(Pcs handle)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	const char *html, *errmsg;
 	int http_code;
 
+    printf("-----------> login 1\n");
+
 	pcs_clear_errmsg(handle);
-	html = pcs_http_get(pcs->http, URL_DISK_HOME, PcsTrue);
+	html = pcs_http_get(pcs->http, URL_DISK_HOME, pcsTrue);
 	http_code = pcs_http_code(pcs->http);
 	if (http_code != 200) {
 		if (http_code != 302) {
@@ -1397,6 +1399,7 @@ PCS_API PcsRes pcs_islogin(Pcs handle)
 		}
 		return PCS_NOT_LOGIN;
 	}
+    printf("-----------> login 2\n");
 	if (!html) {
 		errmsg = pcs_http_strerror(pcs->http);
 		if (errmsg)
@@ -1406,6 +1409,7 @@ PCS_API PcsRes pcs_islogin(Pcs handle)
 		return PCS_NETWORK_ERROR;
 	}
 	
+    printf("-----------> login 3\n");
 	if (pcs->bdstoken) pcs_free(pcs->bdstoken);
 	pcs->bdstoken = pcs_get_value_by_key(html, "yunData.MYBDSTOKEN");
 	if (!pcs->bdstoken || strlen(pcs->bdstoken) == 0) {
@@ -1415,14 +1419,17 @@ PCS_API PcsRes pcs_islogin(Pcs handle)
 		cJSON *json, *item;
 		char *jsonData = pcs_get_yunData(html, "context");
 		//char *jsonData = pcs_get_yunData(html, "yunData.setData");
+    printf("-----------> login 4\n");
 		if (!jsonData) {
 			return PCS_NOT_LOGIN;
 		}
+    printf("-----------> login 5\n");
 		json = cJSON_Parse(jsonData);
 		if (!json) {
 			pcs_free(jsonData);
 			return PCS_NOT_LOGIN;
 		}
+    printf("-----------> login 6\n");
 		item = cJSON_GetObjectItem(json, "bdstoken");
 		if (!item || !item->valuestring || strlen(item->valuestring) == 0) {
 			pcs_free(jsonData);
@@ -1437,10 +1444,12 @@ PCS_API PcsRes pcs_islogin(Pcs handle)
 		if (item && item->valuestring) {
 			pcs->sysUID = pcs_utils_strdup(item->valuestring);
 		}
+    printf("-----------> login 7\n");
 		pcs_free(jsonData);
 		cJSON_Delete(json);
 		return PCS_LOGIN;
 	}
+    printf("-----------> login 8\n");
 	if (pcs->bdstoken != NULL && strlen(pcs->bdstoken) > 0) {
 		//printf("bdstoken: %s\n", pcs->bdstoken);
 		if (pcs->bduss) pcs_free(pcs->bduss);
@@ -1455,7 +1464,7 @@ PCS_API PcsRes pcs_islogin(Pcs handle)
 	return PCS_NOT_LOGIN;
 }
 
-static PcsRes pcs_prelogin(__in Pcs handle,
+static pcsRes pcs_prelogin(__in Pcs handle,
 	__out char **token, __out char **code_string)
 {
 	struct pcs *pcs = (struct pcs *)handle;
@@ -1465,11 +1474,13 @@ static PcsRes pcs_prelogin(__in Pcs handle,
 
 	pcs_clear_errmsg(handle);
 
-	html = pcs_http_get(pcs->http, URL_HOME, PcsTrue);
+	html = pcs_http_get(pcs->http, URL_HOME, pcsTrue);
 	if (!html) {
 		errmsg = pcs_http_strerror(pcs->http);
-		if (errmsg)
+		if (errmsg) {
+            printf("--------> 0\n");
 			pcs_set_serrmsg(handle, errmsg);
+        }
 		else
 			pcs_set_errmsg(handle, "Can't get response from the remote server.");
 		return PCS_NETWORK_ERROR;
@@ -1480,12 +1491,14 @@ static PcsRes pcs_prelogin(__in Pcs handle,
 		"&class=login" "&logintype=basicLogin"
 		"&callback=bd__cbs__pwxtn7",
 		pcs_js_timestr());
-	html = pcs_http_get(pcs->http, url, PcsTrue);
+	html = pcs_http_get(pcs->http, url, pcsTrue);
 	pcs_free(url);
 	if (!html) {
 		errmsg = pcs_http_strerror(pcs->http);
-		if (errmsg)
+		if (errmsg) {
+            printf("--------> 1\n");
 			pcs_set_serrmsg(handle, errmsg);
+        }
 		else
 			pcs_set_errmsg(handle, "Can't get response from the remote server.");
 		return PCS_NETWORK_ERROR;
@@ -1537,12 +1550,14 @@ static PcsRes pcs_prelogin(__in Pcs handle,
 		"&username=%s" "&isphone=false"
 		"&callback=bd__cbs__q4ztud",
 		*token, pcs_js_timestr(), pcs->username);
-	html = pcs_http_get(pcs->http, url, PcsTrue);
+	html = pcs_http_get(pcs->http, url, pcsTrue);
 	pcs_free(url);
 	if (!html) {
 		errmsg = pcs_http_strerror(pcs->http);
-		if (errmsg)
+		if (errmsg) {
+            printf("--------> 2\n");
 			pcs_set_serrmsg(handle, errmsg);
+        }
 		else
 			pcs_set_errmsg(handle, "Can't get response from the remote server.");
 		return PCS_NETWORK_ERROR;
@@ -1625,7 +1640,7 @@ static char *pcs_get_pass_v3_jump_url(__in Pcs handle, char *html)
 	return url;
 }
 
-static PcsRes pcs_dologin(__in Pcs handle,
+static pcsRes pcs_dologin(__in Pcs handle,
 	__in int64_t starttime,
 	__in const char *code_string,
 	__in const char *token,
@@ -1633,7 +1648,7 @@ static PcsRes pcs_dologin(__in Pcs handle,
 	__out char **out_html)
 {
 	struct pcs *pcs = (struct pcs *)handle;
-	PcsRes res;
+	pcsRes res;
 	char captch[32], *post_data, *html, *dv;
 	const char *errmsg;
 
@@ -1686,7 +1701,7 @@ static PcsRes pcs_dologin(__in Pcs handle,
 		pcs_set_errmsg(handle, "Can't build the post data.");
 		return PCS_BUILD_POST_DATA;
 	}
-	html = pcs_http_post(pcs->http, URL_PASSPORT_API "login", post_data, PcsTrue);
+	html = pcs_http_post(pcs->http, URL_PASSPORT_API "login", post_data, pcsTrue);
 	pcs_free(post_data);
 	if (!html) {
 		errmsg = pcs_http_strerror(pcs->http);
@@ -1712,7 +1727,7 @@ static PcsRes pcs_dologin(__in Pcs handle,
 
 		/* TODO: 应该不需要叫一次 jump_url 的，待验证？ */
 		jump_url = pcs_get_pass_v3_jump_url(handle, html);
-		html = pcs_http_get(pcs->http, jump_url, PcsTrue);
+		html = pcs_http_get(pcs->http, jump_url, pcsTrue);
 		pcs_free(jump_url);
 		if (pcs_http_code(pcs->http) != 200) {
 			pcs_set_errmsg(handle, "GET '%s' failed.", jump_url);
@@ -1723,7 +1738,7 @@ static PcsRes pcs_dologin(__in Pcs handle,
 	}
 }
 
-static PcsRes pcs_call_authwidgetverify(__in Pcs handle,
+static pcsRes pcs_call_authwidgetverify(__in Pcs handle,
 	__in const char *authtoken,
 	__in const char *vtype,
 	__in const char *action,
@@ -1739,7 +1754,7 @@ static PcsRes pcs_call_authwidgetverify(__in Pcs handle,
 	cJSON *json, *root, *item;
 
 	url = pcs_utils_sprintf(URL_AUTHWIDGET_VERIFY, authtoken, vtype, action, vcode);
-	html = pcs_http_get(pcs->http, url, PcsTrue);
+	html = pcs_http_get(pcs->http, url, pcsTrue);
 	pcs_free(url);
 	if (!html) {
 		errmsg = pcs_http_strerror(pcs->http);
@@ -1808,7 +1823,7 @@ static PcsRes pcs_call_authwidgetverify(__in Pcs handle,
 	return PCS_OK;
 }
 
-static PcsRes pcs_call_auththaw(__in Pcs handle,
+static pcsRes pcs_call_auththaw(__in Pcs handle,
 	__in const char *gotourl,
 	__in const char *authsid)
 {
@@ -1824,7 +1839,7 @@ static PcsRes pcs_call_auththaw(__in Pcs handle,
 	url = pcs_utils_strcat(url, pcs_js_timestr(), -1, 1);
 	url = pcs_utils_strcat(url, "&callback=bd__cbs__19usfv", -1, 1);
 
-	html = pcs_http_get(pcs->http, url, PcsTrue);
+	html = pcs_http_get(pcs->http, url, pcsTrue);
 	pcs_free(url);
 	if (!html) {
 		errmsg = pcs_http_strerror(pcs->http);
@@ -1901,13 +1916,13 @@ static PcsSList2 *get_verify_api_by_index(__in PcsSList2 *list, __in int index)
 	return NULL;
 }
 
-static PcsRes pcs_do_auth_verify(__in Pcs handle,
+static pcsRes pcs_do_auth_verify(__in Pcs handle,
 	__in const char *authtoken,
 	__out int *res_error,
 	__out char **authsid)
 {
 	struct pcs *pcs = (struct pcs *)handle;
-	PcsRes res;
+	pcsRes res;
 	int error;
 	char *msg, tips[PCS_MSG_BUFFER_SIZE], vm[128], captch[32];
 	PcsSList2 *verify_api_list, *selected_item;
@@ -2017,10 +2032,10 @@ static PcsRes pcs_do_auth_verify(__in Pcs handle,
 	return PCS_OK;
 }
 
-PCS_API PcsRes pcs_login(Pcs handle)
+PCS_API pcsRes pcs_login(Pcs handle)
 {
 	struct pcs *pcs = (struct pcs *)handle;
-	PcsRes res;
+	pcsRes res;
 	char *html = NULL;
 	char *token = NULL, *code_string = NULL;
 	int error = -1, retry_times;
@@ -2030,6 +2045,7 @@ PCS_API PcsRes pcs_login(Pcs handle)
 	if (res != PCS_OK) {
 		pcs_free(token);
 		pcs_free(code_string);
+    printf("-------> %s\n", code_string);
 		return res;
 	}
 
@@ -2046,6 +2062,7 @@ try_login:
 		pcs_free(token);
 		pcs_free(code_string);
 		pcs_free(html);
+    printf("-------> error %d\n", error);
 		return res;
 	}
 
@@ -2126,14 +2143,14 @@ try_login:
 	return PCS_FAIL;
 }
 
-PCS_API PcsRes pcs_logout(Pcs handle)
+PCS_API pcsRes pcs_logout(Pcs handle)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	int http_code;
 	const char *errmsg;
 
 	pcs_clear_errmsg(handle);
-	pcs_http_get(pcs->http, URL_PASSPORT_LOGOUT, PcsFalse);
+	pcs_http_get(pcs->http, URL_PASSPORT_LOGOUT, pcsFalse);
 	http_code = pcs_http_code(pcs->http);
 	if (http_code == 302) {
 		if (pcs->username) {
@@ -2166,7 +2183,7 @@ PCS_API PcsRes pcs_logout(Pcs handle)
 	return PCS_FAIL;
 }
 
-PCS_API PcsRes pcs_quota(Pcs handle, int64_t *quota, int64_t *used)
+PCS_API pcsRes pcs_quota(Pcs handle, int64_t *quota, int64_t *used)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	cJSON *json, *item;
@@ -2179,7 +2196,7 @@ PCS_API PcsRes pcs_quota(Pcs handle, int64_t *quota, int64_t *used)
 		pcs_set_errmsg(handle, "Can't build the url.");
 		return PCS_BUILD_URL;
 	}
-	html = pcs_http_get(pcs->http, url, PcsTrue);
+	html = pcs_http_get(pcs->http, url, pcsTrue);
 	pcs_free(url);
 	if (!html) {
 		const char *errmsg = pcs_http_strerror(pcs->http);
@@ -2232,7 +2249,7 @@ PCS_API PcsRes pcs_quota(Pcs handle, int64_t *quota, int64_t *used)
 	return PCS_OK;
 }
 
-PCS_API PcsRes pcs_mkdir(Pcs handle, const char *path)
+PCS_API pcsRes pcs_mkdir(Pcs handle, const char *path)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	int error;
@@ -2256,7 +2273,7 @@ PCS_API PcsRes pcs_mkdir(Pcs handle, const char *path)
 		pcs_free(url);
 		return PCS_BUILD_POST_DATA;
 	}
-	html = pcs_http_post(pcs->http, url, postdata, PcsTrue);
+	html = pcs_http_post(pcs->http, url, postdata, pcsTrue);
 	pcs_free(url);
 	pcs_free(postdata);
 	if (!html) {
@@ -2274,7 +2291,7 @@ PCS_API PcsRes pcs_mkdir(Pcs handle, const char *path)
 	return PCS_OK;
 }
 
-PCS_API PcsFileInfoList *pcs_list(Pcs handle, const char *dir, int pageindex, int pagesize, const char *order, PcsBool desc)
+PCS_API PcsFileInfoList *pcs_list(Pcs handle, const char *dir, int pageindex, int pagesize, const char *order, pcsBool desc)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	char *page, *pagenum;
@@ -2295,7 +2312,7 @@ PCS_API PcsFileInfoList *pcs_list(Pcs handle, const char *dir, int pageindex, in
 	return filist;
 }
 
-PCS_API PcsFileInfoList *pcs_search(Pcs handle, const char *dir, const char *key, PcsBool recursion)
+PCS_API PcsFileInfoList *pcs_search(Pcs handle, const char *dir, const char *key, pcsBool recursion)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	PcsFileInfoList *filist = NULL;
@@ -2324,12 +2341,12 @@ PCS_API PcsFileInfo *pcs_meta(Pcs handle, const char *path)
 			p--;
 		*p = '\0';
 	}
-	filist = pcs_search(handle, dir, key, PcsFalse);
+	filist = pcs_search(handle, dir, key, pcsFalse);
 	pcs_free(dir);
 	pcs_free(key);
 	if (!filist)
 		return NULL;
-	pcs_filist_iterater_init(filist, &iterater, PcsFalse);
+	pcs_filist_iterater_init(filist, &iterater, pcsFalse);
 	while(pcs_filist_iterater_next(&iterater)) {
 		if (pcs_utils_strcmpi(path, iterater.current->path) == 0) {
 			meta = iterater.current;
@@ -2425,7 +2442,7 @@ PCS_API PcsPanApiRes *pcs_copy(Pcs handle, PcsSList2 *slist)
 	return res;
 }
 
-static PcsRes pcs_download_normal(Pcs handle, const char *path, PcsHttpWriteFunction write, void *write_state, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length)
+static pcsRes pcs_download_normal(Pcs handle, const char *path, PcsHttpWriteFunction write, void *write_state, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	char *url;
@@ -2449,7 +2466,7 @@ static PcsRes pcs_download_normal(Pcs handle, const char *path, PcsHttpWriteFunc
 		pcs_set_errmsg(handle, "Can't build the url.");
 		return PCS_BUILD_URL;
 	}
-	if (pcs_http_get_download(pcs->http, url, PcsTrue, max_speed, resume_from, max_length)) {
+	if (pcs_http_get_download(pcs->http, url, pcsTrue, max_speed, resume_from, max_length)) {
 		pcs_free(url);
 		return PCS_OK;
 	}
@@ -2462,7 +2479,7 @@ static PcsRes pcs_download_normal(Pcs handle, const char *path, PcsHttpWriteFunc
 	return PCS_FAIL;
 }
 
-PCS_API PcsRes pcs_download(Pcs handle, const char *path, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length)
+PCS_API pcsRes pcs_download(Pcs handle, const char *path, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	return pcs_download_normal(handle, path, pcs->download_func, pcs->download_data, max_speed, resume_from, max_length);
@@ -2495,7 +2512,7 @@ PCS_API int64_t pcs_get_download_filesize(Pcs handle, const char *path)
 		pcs_set_errmsg(handle, "Can't build the url.");
 		return 0;
 	}
-	size = pcs_http_get_download_filesize(pcs->http, url, PcsTrue);
+	size = pcs_http_get_download_filesize(pcs->http, url, pcsTrue);
 	pcs_free(url);
 	errmsg = pcs_http_strerror(pcs->http);
 	if (errmsg)
@@ -2529,7 +2546,7 @@ static size_t pcs_cat_write_func(char *ptr, size_t size, size_t contentlength, v
 PCS_API const char *pcs_cat(Pcs handle, const char *path, size_t *dstsz)
 {
 	struct pcs *pcs = (struct pcs *)handle;
-	PcsRes rc;
+	pcsRes rc;
 
 	if (pcs->buffer) pcs_free(pcs->buffer);
 	pcs->buffer = NULL;
@@ -2542,7 +2559,7 @@ PCS_API const char *pcs_cat(Pcs handle, const char *path, size_t *dstsz)
 	return pcs->buffer;
 }
 
-PCS_API PcsFileInfo *pcs_upload_buffer(Pcs handle, const char *path, PcsBool overwrite, const char *buffer, size_t buffer_size, curl_off_t max_speed)
+PCS_API PcsFileInfo *pcs_upload_buffer(Pcs handle, const char *path, pcsBool overwrite, const char *buffer, size_t buffer_size, curl_off_t max_speed)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	char *filename;
@@ -2553,7 +2570,7 @@ PCS_API PcsFileInfo *pcs_upload_buffer(Pcs handle, const char *path, PcsBool ove
 
 	pcs_clear_errmsg(handle);
 	filename = pcs_utils_filename(path);
-	if (pcs_http_form_addbuffer(pcs->http, &form, "file", buf, (long)sz, filename) != PcsTrue) {
+	if (pcs_http_form_addbuffer(pcs->http, &form, "file", buf, (long)sz, filename) != pcsTrue) {
 		pcs_set_errmsg(handle, "Can't build the post data.");
 		pcs_free(filename);
 		if (buf != buffer) pcs_free(buf);
@@ -2575,7 +2592,7 @@ PCS_API PcsFileInfo *pcs_upload_slice(Pcs handle, const char *buffer, size_t buf
 	char *buf = (char *)buffer;
 
 	pcs_clear_errmsg(handle);
-	if (pcs_http_form_addbuffer(pcs->http, &form, "file", buf, (long)sz, NULL) != PcsTrue) {
+	if (pcs_http_form_addbuffer(pcs->http, &form, "file", buf, (long)sz, NULL) != pcsTrue) {
 		pcs_set_errmsg(handle, "Can't build the post data.");
 		if (buf != buffer) pcs_free(buf);
 		return NULL;
@@ -2596,7 +2613,7 @@ PCS_API PcsFileInfo *pcs_upload_slicefile(Pcs handle,
 	PcsFileInfo *meta;
 
 	pcs_clear_errmsg(handle);
-	if (pcs_http_form_addbufferfile(pcs->http, &form, "file", NULL, read_func, userdata, content_size) != PcsTrue) {
+	if (pcs_http_form_addbufferfile(pcs->http, &form, "file", NULL, read_func, userdata, content_size) != pcsTrue) {
 		pcs_set_errmsg(handle, "Can't build the post data.");
 		return NULL;
 	}
@@ -2605,7 +2622,7 @@ PCS_API PcsFileInfo *pcs_upload_slicefile(Pcs handle,
 	return meta;
 }
 
-PCS_API PcsFileInfo *pcs_create_superfile(Pcs handle, const char *path, PcsBool overwrite, PcsSList *block_list)
+PCS_API PcsFileInfo *pcs_create_superfile(Pcs handle, const char *path, pcsBool overwrite, PcsSList *block_list)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	char *url, *postdata, *block_list_data, *html;
@@ -2644,7 +2661,7 @@ PCS_API PcsFileInfo *pcs_create_superfile(Pcs handle, const char *path, PcsBool 
 		pcs_free(url);
 		return NULL;
 	}
-	html = pcs_http_post(pcs->http, url, postdata, PcsTrue);
+	html = pcs_http_post(pcs->http, url, postdata, pcsTrue);
 	pcs_free(postdata);
 	pcs_free(url);
 	if (!html) {
@@ -2693,7 +2710,7 @@ PCS_API PcsFileInfo *pcs_create_superfile(Pcs handle, const char *path, PcsBool 
 	return meta;
 }
 
-PCS_API PcsFileInfo *pcs_upload(Pcs handle, const char *path, PcsBool overwrite, 
+PCS_API PcsFileInfo *pcs_upload(Pcs handle, const char *path, pcsBool overwrite, 
 									   const char *local_filename, curl_off_t max_speed)
 {
 	struct pcs *pcs = (struct pcs *)handle;
@@ -2703,7 +2720,7 @@ PCS_API PcsFileInfo *pcs_upload(Pcs handle, const char *path, PcsBool overwrite,
 
 	pcs_clear_errmsg(handle);
 	filename = pcs_utils_filename(path);
-	if (pcs_http_form_addfile(pcs->http, &form, "file", local_filename, filename) != PcsTrue) {
+	if (pcs_http_form_addfile(pcs->http, &form, "file", local_filename, filename) != pcsTrue) {
 		pcs_set_errmsg(handle, "Can't build the post data.");
 		pcs_free(filename);
 		return NULL;
@@ -2714,7 +2731,7 @@ PCS_API PcsFileInfo *pcs_upload(Pcs handle, const char *path, PcsBool overwrite,
 	return meta;
 }
 
-PCS_API PcsFileInfo *pcs_upload_s(Pcs handle, const char *to_path, PcsBool overwrite,
+PCS_API PcsFileInfo *pcs_upload_s(Pcs handle, const char *to_path, pcsBool overwrite,
 	size_t(*read_func)(void *ptr, size_t size, size_t nmemb, void *userdata),
 	void *userdata,
 	size_t content_size, curl_off_t max_speed)
@@ -2726,7 +2743,7 @@ PCS_API PcsFileInfo *pcs_upload_s(Pcs handle, const char *to_path, PcsBool overw
 
 	pcs_clear_errmsg(handle);
 	filename = pcs_utils_filename(to_path);
-	if (pcs_http_form_addbufferfile(pcs->http, &form, "file", NULL, read_func, userdata, content_size) != PcsTrue) {
+	if (pcs_http_form_addbufferfile(pcs->http, &form, "file", NULL, read_func, userdata, content_size) != pcsTrue) {
 		pcs_set_errmsg(handle, "Can't build the post data.");
 		return NULL;
 	}
@@ -2759,7 +2776,7 @@ PCS_API int64_t pcs_local_filesize(Pcs handle, const char *path)
 	return sz;
 }
 
-PCS_API PcsBool pcs_md5_file(Pcs handle, const char *path, char *md5_buf)
+PCS_API pcsBool pcs_md5_file(Pcs handle, const char *path, char *md5_buf)
 {
 	MD5_CTX md5;
 	FILE *pf;
@@ -2772,7 +2789,7 @@ PCS_API PcsBool pcs_md5_file(Pcs handle, const char *path, char *md5_buf)
 	pf = fopen(path, "rb");
 	if (!pf) {
 		pcs_set_errmsg(handle, "Can't open the file. %s", path);
-		return PcsFalse;
+		return pcsFalse;
 	}
 
 	MD5_Init(&md5);
@@ -2784,10 +2801,10 @@ PCS_API PcsBool pcs_md5_file(Pcs handle, const char *path, char *md5_buf)
 	for (i = 0; i < 16; i++) {
 		sprintf(&md5_buf[i * 2], "%02x", md5_value[i]);
 	}
-	return PcsTrue;
+	return pcsTrue;
 }
 
-PCS_API PcsBool pcs_md5_s(Pcs handle,
+PCS_API pcsBool pcs_md5_s(Pcs handle,
 	size_t(*read_func)(void *ptr, size_t size, size_t nmemb, void *userdata),
 	void *userdata,
 	char *md5_buf)
@@ -2812,12 +2829,12 @@ PCS_API PcsBool pcs_md5_s(Pcs handle,
 		for (i = 0; i < 16; i++) {
 			sprintf(&md5_buf[i * 2], "%02x", md5_value[i]);
 		}
-		return PcsTrue;
+		return pcsTrue;
 	}
-	return PcsFalse;
+	return pcsFalse;
 }
 
-PCS_API PcsBool pcs_md5_file_slice(Pcs handle, const char *path, int64_t offset, int64_t length, char *md5_buf)
+PCS_API pcsBool pcs_md5_file_slice(Pcs handle, const char *path, int64_t offset, int64_t length, char *md5_buf)
 {
 	MD5_CTX md5;
 	FILE *pf;
@@ -2831,13 +2848,13 @@ PCS_API PcsBool pcs_md5_file_slice(Pcs handle, const char *path, int64_t offset,
 	pf = fopen(path, "rb");
 	if (!pf) {
 		pcs_set_errmsg(handle, "Can't open the file. %s", path);
-		return PcsFalse;
+		return pcsFalse;
 	}
 
 	if (fseeko(pf, offset, SEEK_SET)) {
 		pcs_set_errmsg(handle, "fseeko() error. %s", path);
 		fclose(pf);
-		return PcsFalse;
+		return pcsFalse;
 	}
 
 	MD5_Init(&md5);
@@ -2856,10 +2873,10 @@ PCS_API PcsBool pcs_md5_file_slice(Pcs handle, const char *path, int64_t offset,
 	for (i = 0; i < 16; i++) {
 		sprintf(&md5_buf[i * 2], "%02x", md5_value[i]);
 	}
-	return PcsTrue;
+	return pcsTrue;
 }
 
-PCS_API PcsFileInfo *pcs_rapid_upload(Pcs handle, const char *path, PcsBool overwrite, const char *local_filename, char *out_content_md5, char *out_slice_md5)
+PCS_API PcsFileInfo *pcs_rapid_upload(Pcs handle, const char *path, pcsBool overwrite, const char *local_filename, char *out_content_md5, char *out_slice_md5)
 {
 	struct pcs *pcs = (struct pcs *)handle;
 	int64_t content_length;
@@ -2898,7 +2915,7 @@ PCS_API PcsFileInfo *pcs_rapid_upload(Pcs handle, const char *path, PcsBool over
 	return pcs_rapid_upload_r(handle, path, overwrite, content_length, content_md5, slice_md5);
 }
 
-PCS_API PcsFileInfo *pcs_rapid_upload_r(Pcs handle, const char *path, PcsBool overwrite,
+PCS_API PcsFileInfo *pcs_rapid_upload_r(Pcs handle, const char *path, pcsBool overwrite,
 	int64_t content_length, const char *content_md5, const char *slice_md5)
 {
 	struct pcs *pcs = (struct pcs *)handle;
@@ -2937,7 +2954,7 @@ PCS_API PcsFileInfo *pcs_rapid_upload_r(Pcs handle, const char *path, PcsBool ov
 	pcs_free(dir);
 	pcs_free(filename);
 
-	html = pcs_http_get(pcs->http, url, PcsTrue);
+	html = pcs_http_get(pcs->http, url, pcsTrue);
 	pcs_free(url);
 	http_code = pcs_http_code(pcs->http);
 	if (http_code == 404)

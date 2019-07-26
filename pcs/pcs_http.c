@@ -90,7 +90,7 @@ enum HttpMethod
 };
 
 static inline void pcs_http_prepare(struct pcs_http *http, enum HttpMethod method,
-	const char *url, PcsBool follow_location,
+	const char *url, pcsBool follow_location,
 	PcsHttpWriteFunction write_func, void *state,
 	curl_off_t max_recv_speed, curl_off_t max_send_speed,
 	long min_recv_speed, long min_recv_speed_time,
@@ -183,20 +183,20 @@ static inline char *read_cookie_attr(char **p)
 	return res;
 }
 
-static inline PcsBool pcs_http_is_http_redirect_head(struct pcs_http *http, char *ptr, size_t size)
+static inline pcsBool pcs_http_is_http_redirect_head(struct pcs_http *http, char *ptr, size_t size)
 {
 	if ((http->res_type % 2) == 1 && size >= 15 
 		&& ptr[0] == 'H' && ptr[1] == 'T' && ptr[2] == 'T' && ptr[3] == 'P'
 		&& ptr[4] == '/' && ptr[5] == '1' && ptr[6] == '.' && (ptr[7] == '0' || ptr[7] == '1')
 		&& ptr[8] == ' ' && ptr[9] >= '0' && ptr[9] <= '9') {
-		return PcsTrue;
+		return pcsTrue;
 	}
-	return PcsFalse;
+	return pcsFalse;
 }
 
-static inline PcsBool pcs_http_is_http_head(struct pcs_http *http, char *ptr, size_t size)
+static inline pcsBool pcs_http_is_http_head(struct pcs_http *http, char *ptr, size_t size)
 {
-	return (http->res_type % 2) == 0 ? PcsTrue : PcsFalse;
+	return (http->res_type % 2) == 0 ? pcsTrue : pcsFalse;
 }
 
 static inline int pcs_http_get_content_length_from_header(const char *header, int size)
@@ -284,7 +284,7 @@ static inline char *pcs_http_get_charset_from_header(const char *header, int siz
 //	return res;
 //}
 
-static inline PcsBool pcs_http_parse_http_head(struct pcs_http *http, char **ptr, size_t *size, PcsBool try_get_encode)
+static inline pcsBool pcs_http_parse_http_head(struct pcs_http *http, char **ptr, size_t *size, pcsBool try_get_encode)
 {
 	char *p, *cusor, *end;
 	int cnt;
@@ -300,7 +300,7 @@ static inline PcsBool pcs_http_parse_http_head(struct pcs_http *http, char **ptr
 	if (pcs_http_is_http_head(http, *ptr, *size)) {
 		p = (char *) pcs_malloc(http->res_header_size + *size + 1);
 		if (!p)
-			return PcsFalse;
+			return pcsFalse;
 		if (http->res_header) {
 			memcpy(p, http->res_header, http->res_header_size);
 			pcs_free(http->res_header);
@@ -355,7 +355,7 @@ static inline PcsBool pcs_http_parse_http_head(struct pcs_http *http, char **ptr
 			*size = 0;
 		}
 	}
-	return PcsTrue;
+	return pcsTrue;
 }
 
 static inline char *pcs_http_append_bytes(char *dest, int sz, char *src, int srcsz)
@@ -384,7 +384,7 @@ size_t pcs_http_write(char *ptr, size_t size, size_t nmemb, void *userdata)
 		return 0;
 	}
 	sz = size * nmemb;
-	if (!pcs_http_parse_http_head(http, &ptr, &sz, PcsTrue)) {
+	if (!pcs_http_parse_http_head(http, &ptr, &sz, pcsTrue)) {
 		if (http->strerror) pcs_free(http->strerror);
 		http->strerror = pcs_utils_strdup("Cannot parse the http head. ");
 		return 0;
@@ -813,14 +813,14 @@ PCS_API int pcs_http_get_response_size(PcsHttp handle)
 	return http->res_body_size;
 }
 
-PCS_API char *pcs_http_get(PcsHttp handle, const char *url, PcsBool follow_location)
+PCS_API char *pcs_http_get(PcsHttp handle, const char *url, pcsBool follow_location)
 {
 	struct pcs_http *http = (struct pcs_http *)handle;
 	pcs_http_prepare(http, HTTP_METHOD_GET, url, follow_location, &pcs_http_write, http, 0, 0, 0, 0, 0, 0);
 	return pcs_http_perform(http, url);
 }
 
-PCS_API char *pcs_http_get_raw(PcsHttp handle, const char *url, PcsBool follow_location, size_t *sz)
+PCS_API char *pcs_http_get_raw(PcsHttp handle, const char *url, pcsBool follow_location, size_t *sz)
 {
 	struct pcs_http *http = (struct pcs_http *)handle;
 	char *data;
@@ -831,7 +831,7 @@ PCS_API char *pcs_http_get_raw(PcsHttp handle, const char *url, PcsBool follow_l
 	return data;
 }
 
-PCS_API char *pcs_http_post(PcsHttp handle, const char *url, char *post_data, PcsBool follow_location)
+PCS_API char *pcs_http_post(PcsHttp handle, const char *url, char *post_data, pcsBool follow_location)
 {
 	struct pcs_http *http = (struct pcs_http *)handle;
 	pcs_http_prepare(http, HTTP_METHOD_POST, url, follow_location, &pcs_http_write, http, 0, 0, 0, 0, 0, 0);
@@ -842,7 +842,7 @@ PCS_API char *pcs_http_post(PcsHttp handle, const char *url, char *post_data, Pc
 	return pcs_http_perform(http, url);
 }
 
-PCS_API PcsBool pcs_http_get_download(PcsHttp handle, const char *url, PcsBool follow_location, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length)
+PCS_API pcsBool pcs_http_get_download(PcsHttp handle, const char *url, pcsBool follow_location, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length)
 {
 	struct pcs_http *http = (struct pcs_http *)handle;
 	pcs_http_prepare(http, HTTP_METHOD_GET, url, follow_location, &pcs_http_write, http,
@@ -851,7 +851,7 @@ PCS_API PcsBool pcs_http_get_download(PcsHttp handle, const char *url, PcsBool f
 		resume_from, max_length);
 	http->res_type = PCS_HTTP_RES_TYPE_DOWNLOAD;
 	pcs_http_perform(http, url);
-	return http->strerror == NULL ? PcsTrue : PcsFalse;
+	return http->strerror == NULL ? pcsTrue : pcsFalse;
 }
 
 size_t pcs_http_null_write(char *ptr, size_t size, size_t nmemb, void *userdata)
@@ -859,7 +859,7 @@ size_t pcs_http_null_write(char *ptr, size_t size, size_t nmemb, void *userdata)
 	return size * nmemb;
 }
 
-PCS_API int64_t pcs_http_get_download_filesize(PcsHttp handle, const char *url, PcsBool follow_location)
+PCS_API int64_t pcs_http_get_download_filesize(PcsHttp handle, const char *url, pcsBool follow_location)
 {
 	CURLcode res;
 	double downloadFileLenth = 0;
@@ -877,17 +877,17 @@ PCS_API int64_t pcs_http_get_download_filesize(PcsHttp handle, const char *url, 
 	return (int64_t)downloadFileLenth;
 }
 
-PCS_API PcsBool pcs_http_form_addfile(PcsHttp handle, PcsHttpForm *post, const char *param_name, 
+PCS_API pcsBool pcs_http_form_addfile(PcsHttp handle, PcsHttpForm *post, const char *param_name, 
 									  const char *filename, const char *simulate_filename)
 {
 	struct pcs_http *http = (struct pcs_http *)handle;
 	struct http_post *formpost = (struct http_post *)(*post);
 	char *escape_param_name, *escape_simulate_filename;
-	PcsBool res = PcsTrue;
+	pcsBool res = pcsTrue;
 	if (!formpost) {
 		formpost = (struct http_post *)pcs_malloc(sizeof(struct http_post));
 		if (!formpost)
-			return PcsFalse;
+			return pcsFalse;
 		memset(formpost, 0, sizeof(struct http_post));
 		(*post) = (PcsHttpForm)formpost;
 	}
@@ -898,24 +898,24 @@ PCS_API PcsBool pcs_http_form_addfile(PcsHttp handle, PcsHttpForm *post, const c
 		CURLFORM_FILE, filename,
 		CURLFORM_FILENAME, escape_simulate_filename ? escape_simulate_filename : " ",
 		CURLFORM_END)) {
-		res = PcsFalse;
+		res = pcsFalse;
 	}
 	curl_free((void *)escape_param_name);
 	if (escape_simulate_filename) curl_free((void *)escape_simulate_filename);
 	return res;
 }
 
-PCS_API PcsBool pcs_http_form_addbufferfile(PcsHttp handle, PcsHttpForm *post, const char *param_name, const char *simulate_filename,
+PCS_API pcsBool pcs_http_form_addbufferfile(PcsHttp handle, PcsHttpForm *post, const char *param_name, const char *simulate_filename,
 	size_t(*read_func)(void *ptr, size_t size, size_t nmemb, void *userdata), void *userdata, size_t content_size)
 {
 	struct pcs_http *http = (struct pcs_http *)handle;
 	struct http_post *formpost = (struct http_post *)(*post);
 	char *escape_param_name, *escape_simulate_filename;
-	PcsBool res = PcsTrue;
+	pcsBool res = pcsTrue;
 	if (!formpost) {
 		formpost = (struct http_post *)pcs_malloc(sizeof(struct http_post));
 		if (!formpost)
-			return PcsFalse;
+			return pcsFalse;
 		memset(formpost, 0, sizeof(struct http_post));
 		(*post) = (PcsHttpForm)formpost;
 	}
@@ -927,7 +927,7 @@ PCS_API PcsBool pcs_http_form_addbufferfile(PcsHttp handle, PcsHttpForm *post, c
 		CURLFORM_CONTENTSLENGTH, (long) content_size,
 		CURLFORM_FILENAME, escape_simulate_filename ? escape_simulate_filename : "part",
 		CURLFORM_END)) {
-		res = PcsFalse;
+		res = pcsFalse;
 	}
 	curl_free((void *)escape_param_name);
 	if (escape_simulate_filename) curl_free((void *)escape_simulate_filename);
@@ -936,17 +936,17 @@ PCS_API PcsBool pcs_http_form_addbufferfile(PcsHttp handle, PcsHttpForm *post, c
 	return res;
 }
 
-PCS_API PcsBool pcs_http_form_addbuffer(PcsHttp handle, PcsHttpForm *post, const char *param_name,
+PCS_API pcsBool pcs_http_form_addbuffer(PcsHttp handle, PcsHttpForm *post, const char *param_name,
 										const char *buffer, long buffer_size, const char *simulate_filename)
 {
 	struct pcs_http *http = (struct pcs_http *)handle;
 	struct http_post *formpost = (struct http_post *)(*post);
 	char *escape_param_name, *escape_simulate_filename;
-	PcsBool res = PcsTrue;
+	pcsBool res = pcsTrue;
 	if (!formpost) {
 		formpost = (struct http_post *)pcs_malloc(sizeof(struct http_post));
 		if (!formpost)
-			return PcsFalse;
+			return pcsFalse;
 		memset(formpost, 0, sizeof(struct http_post));
 		(*post) = (PcsHttpForm)formpost;
 	}
@@ -958,7 +958,7 @@ PCS_API PcsBool pcs_http_form_addbuffer(PcsHttp handle, PcsHttpForm *post, const
 		CURLFORM_BUFFERPTR, buffer,
 		CURLFORM_BUFFERLENGTH, buffer_size,
 		CURLFORM_END))
-		res = PcsFalse;
+		res = pcsFalse;
 	curl_free((void *)escape_param_name);
 	if (escape_simulate_filename) curl_free((void *)escape_simulate_filename);
 	return res;
@@ -973,7 +973,7 @@ PCS_API void pcs_http_form_destroy(PcsHttp handle, PcsHttpForm post)
 	}
 }
 
-PCS_API char *pcs_post_httpform(PcsHttp handle, const char *url, PcsHttpForm data, curl_off_t max_speed, PcsBool follow_location)
+PCS_API char *pcs_post_httpform(PcsHttp handle, const char *url, PcsHttpForm data, curl_off_t max_speed, pcsBool follow_location)
 {
 	struct pcs_http *http = (struct pcs_http *)handle;
 	struct http_post *formpost = (struct http_post *)data;

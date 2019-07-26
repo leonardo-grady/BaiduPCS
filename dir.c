@@ -138,7 +138,7 @@ static LocalFileInfo *CreateLocalFileInfo(const char *parentPath, const char *fi
 	info->parent = parent;
 	info->next = NULL;
 	info->filecount = 0;
-	info->userdata = NULL;
+	info->userData = NULL;
 	while (parent) {
 		parent->filecount++;
 		parent = parent->parent;

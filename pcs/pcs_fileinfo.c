@@ -183,41 +183,41 @@ PCS_API void pcs_filist_combin(PcsFileInfoList *list, PcsFileInfoList *src)
 }
 
 
-PCS_API void pcs_filist_iterater_init(PcsFileInfoList *list, PcsFileInfoListIterater *iterater, PcsBool invert)
+PCS_API void pcs_filist_iterater_init(PcsFileInfoList *list, PcsFileInfoListIterater *iterater, pcsBool invert)
 {
 	memset(iterater, 0, sizeof(PcsFileInfoListIterater));
 	iterater->invert = invert;
 	iterater->list = list;
 }
 
-PCS_API PcsBool pcs_filist_iterater_next(PcsFileInfoListIterater *iterater)
+PCS_API pcsBool pcs_filist_iterater_next(PcsFileInfoListIterater *iterater)
 {
 	if (!iterater->list->link)
-		return PcsFalse;
+		return pcsFalse;
 	if (iterater->invert) {
 		if (!iterater->cursor) {
 			iterater->cursor = iterater->list->link_tail;
 			iterater->current = iterater->cursor->info;
-			return PcsTrue;
+			return pcsTrue;
 		}
 		else if (iterater->cursor->prev) {
 			iterater->cursor = iterater->cursor->prev;
 			iterater->current = iterater->cursor->info;
-			return PcsTrue;
+			return pcsTrue;
 		}
 	}
 	else {
 		if (!iterater->cursor) {
 			iterater->cursor = iterater->list->link;
 			iterater->current = iterater->cursor->info;
-			return PcsTrue;
+			return pcsTrue;
 		}
 		else if (iterater->cursor->next) {
 			iterater->cursor = iterater->cursor->next;
 			iterater->current = iterater->cursor->info;
-			return PcsTrue;
+			return pcsTrue;
 		}
 	}
-	return PcsFalse;
+	return pcsFalse;
 }
 

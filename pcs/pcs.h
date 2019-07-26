@@ -1,5 +1,5 @@
-#ifndef _PCS_H
-#define _PCS_H
+#ifndef _PCS_H_
+#define _PCS_H_
 
 #include "pcs_defs.h"
 #include "pcs_mem.h"
@@ -47,7 +47,7 @@ typedef enum PcsOption {
 	PCS_OPTION_PROGRESS_FUNCTION,
 	/* Pcs本身不使用该值，仅原样传递到PcsHttpProgressCallback函数中 */
 	PCS_OPTION_PROGRESS_FUNCTION_DATE,
-	/* 设置是否启用下载或上传进度，值为PcsBool类型 */
+	/* 设置是否启用下载或上传进度，值为pcsBool类型 */
 	PCS_OPTION_PROGRESS,
 	/* 设置USAGE，值为char类型指针 */
 	PCS_OPTION_USAGE,
@@ -64,7 +64,7 @@ typedef struct PcsInfo {
 	void			*value;
 } PcsInfo;
 
-typedef enum PcsRes {
+typedef enum pcsRes {
 	PCS_NONE = -1,
 	PCS_OK = 0,
 	PCS_FAIL,
@@ -88,7 +88,7 @@ typedef enum PcsRes {
     PCS_GET_INPUT_FAIL,
 
 
-} PcsRes;
+} pcsRes;
 
 /*
  * 登录时，当需要输入验证码时，回调该函数用于获取验证码
@@ -97,9 +97,9 @@ typedef enum PcsRes {
  *   captcha 用于接收验证码字符
  *   captchaSize captcha的最大长度
  *   state 使用PCS_OPTION_CAPTCHA_FUNCTION_DATA选项设定的值原样传入
- * 返回是否成功，返回PcsFalse，将导致登录中断
+ * 返回是否成功，返回pcsFalse，将导致登录中断
 */
-typedef PcsBool (*PcsGetCaptchaFunction)(unsigned char *ptr, size_t size, char *captcha, size_t captchaSize, void *state);
+typedef pcsBool (*PcsGetCaptchaFunction)(unsigned char *ptr, size_t size, char *captcha, size_t captchaSize, void *state);
 
 /*
  * 当 Pcs 需要用户输入时，回调该函数用于获取用户输入值
@@ -107,9 +107,9 @@ typedef PcsBool (*PcsGetCaptchaFunction)(unsigned char *ptr, size_t size, char *
  *   value 用于接受用户输入
  *   valueSize value 的最大长度,包括 '\0' 值
  *   state 使用 PCS_OPTION_INPUT_FUNCTION_DATE 选项设定的值，将被原样传入
- * 返回是否成功，返回 PcsFalse，将导致中断
+ * 返回是否成功，返回 pcsFalse，将导致中断
  */
-typedef PcsBool (*PcsInputFunction)(const char *tips, char *value, size_t valueSize, void *state);
+typedef pcsBool (*PcsInputFunction)(const char *tips, char *value, size_t valueSize, void *state);
 
 typedef void *Pcs;
 
@@ -149,7 +149,7 @@ PCS_API const char *pcs_sysUID(Pcs handle);
  * 获取错误消息。
  * 如果程序中存在错误，则返回错误描述，否则返回NULL
  * 例：
- *    PcsRes res;
+ *    pcsRes res;
  *    const char *err;
  *    res = pcs_login(handle);
  *    if (res != PCS_LOGIN) {
@@ -158,7 +158,7 @@ PCS_API const char *pcs_sysUID(Pcs handle);
  *    }
  *
  * 例2：
- *    PcsRes res;
+ *    pcsRes res;
  *    const char *err;
  *    size_t quota, used;
  *    res = pcs_quota(handle, &quota, &used);
@@ -170,7 +170,7 @@ PCS_API const char *pcs_sysUID(Pcs handle);
  * 例3：
  *    PcsFileInfoList list;
  *    const char *err;
- *    list = pcs_list(handle, "/", 1, 100, "name", PcsFalse);
+ *    list = pcs_list(handle, "/", 1, 100, "name", pcsFalse);
  *    if (!list) {
  *        err = pcs_strerror(handle);
  *        if (err)
@@ -189,7 +189,7 @@ PCS_API const char *pcs_strerror(Pcs handle);
  * 设定单个选项，
  * 成功后返回PCS_OK，失败则返回错误编号
 */
-PCS_API PcsRes pcs_setopt(Pcs handle, PcsOption opt, void *value);
+PCS_API pcsRes pcs_setopt(Pcs handle, PcsOption opt, void *value);
 
 /*
  * 一次设定多个选项，最后一项必须为PCS_OPTION_END。
@@ -197,25 +197,25 @@ PCS_API PcsRes pcs_setopt(Pcs handle, PcsOption opt, void *value);
  *      pcs_setopts(handle, PCS_OPTION_CAPTCHA_FUNCTION, &get_captcha, PCS_OPTION_CAPTCHA_FUNCTION_DATA, state, PCS_OPTION_END);
  * 成功后返回PCS_OK，失败则返回错误编号
  */
-PCS_API PcsRes pcs_setopts(Pcs handle, ...);
+PCS_API pcsRes pcs_setopts(Pcs handle, ...);
 
 /*
  * 返回是否已经登录，
  * 已经登录则返回PCS_LOGIN，否则返回PCS_NOT_LOGIN
 */
-PCS_API PcsRes pcs_islogin(Pcs handle);
+PCS_API pcsRes pcs_islogin(Pcs handle);
 
 /*
  * 登录百度帐号，
  * 成功后返回PCS_LOGIN，失败则返回错误编号
 */
-PCS_API PcsRes pcs_login(Pcs handle);
+PCS_API pcsRes pcs_login(Pcs handle);
 
 /*
 * 注销百度帐号，
 * 成功后返回PCS_OK，失败则返回PCS_FAIL
 */
-PCS_API PcsRes pcs_logout(Pcs handle);
+PCS_API pcsRes pcs_logout(Pcs handle);
 
 /*
  * 获取网盘配额
@@ -223,14 +223,14 @@ PCS_API PcsRes pcs_logout(Pcs handle);
  *   used  用于接收已使用值
  * 成功后返回PCS_OK，失败则返回错误编号
 */
-PCS_API PcsRes pcs_quota(Pcs handle, int64_t *quota, int64_t *used);
+PCS_API pcsRes pcs_quota(Pcs handle, int64_t *quota, int64_t *used);
 
 /*
  * 创建一个目录
  * path  待创建的目录，地址需写全，如/temp
  * 成功后返回PCS_OK，失败则返回错误编号
 */
-PCS_API PcsRes pcs_mkdir(Pcs handle, const char *path);
+PCS_API pcsRes pcs_mkdir(Pcs handle, const char *path);
 
 /*
  * 获取文件列表
@@ -238,12 +238,12 @@ PCS_API PcsRes pcs_mkdir(Pcs handle, const char *path);
  *   pageindex	页索引，从1开始
  *   pagesize	页大小
  *   order		排序字段，可选值：name|time|size
- *   desc		倒序传PcsTrue，正序传PcsFalse
+ *   desc		倒序传pcsTrue，正序传pcsFalse
  * 成功后，返回PcsFileInfoList类型实例，该类型为文件的双向链表，
  * 使用完成后需调用 pcs_filist_destroy() 方法释放。
  * 失败或目录为空则返回 NULL。返回NULL时，可根据pcs_strerror()的返回值来判断是否出错，如果未出错则错误消息为NULL
 */
-PCS_API PcsFileInfoList *pcs_list(Pcs handle, const char *dir, int pageindex, int pagesize, const char *order, PcsBool desc);
+PCS_API PcsFileInfoList *pcs_list(Pcs handle, const char *dir, int pageindex, int pagesize, const char *order, pcsBool desc);
 
 /*
  * 在dir指定的文件夹中搜索关键字key
@@ -254,7 +254,7 @@ PCS_API PcsFileInfoList *pcs_list(Pcs handle, const char *dir, int pageindex, in
  * 使用完成后需调用 pcs_filist_destroy() 方法释放。
  * 失败或未找到则返回 NULL。返回NULL时，可根据pcs_strerror()的返回值来判断是否出错，如果未出错则错误消息为NULL
 */
-PCS_API PcsFileInfoList *pcs_search(Pcs handle, const char *dir, const char *key, PcsBool recursion);
+PCS_API PcsFileInfoList *pcs_search(Pcs handle, const char *dir, const char *key, pcsBool recursion);
 
 /*
  * 获取文件或目录的元信息，该方法通过pcs_search实现。
@@ -324,7 +324,7 @@ PCS_API const char *pcs_cat(Pcs handle, const char *path, size_t *dstsz);
  * 必须指定写入下载内容的函数，可通过PCS_OPTION_DOWNLOAD_WRITE_FUNCTION选项来指定
  * 成功后返回PCS_OK，失败则返回错误编号
  */
-PCS_API PcsRes pcs_download(Pcs handle, const char *path, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length);
+PCS_API pcsRes pcs_download(Pcs handle, const char *path, curl_off_t max_speed, curl_off_t resume_from, curl_off_t max_length);
 
 /*
  * 获取待下载文件的字节大小
@@ -334,7 +334,7 @@ PCS_API int64_t pcs_get_download_filesize(Pcs handle, const char *path);
 /*
  * 把内存中的字节序上传到网盘
  *   path		目标文件，地址需写全，如/temp/file.txt
- *   overwrite  指定是否覆盖原文件，传入PcsTrue则覆盖，传入PcsFalse，则会使用当前日期重命名。
+ *   overwrite  指定是否覆盖原文件，传入pcsTrue则覆盖，传入pcsFalse，则会使用当前日期重命名。
  *              例，如果文件file.txt以存在，则上传后新的文件自动变更为file20140117.txt
  *   buffer     待上传的字节序
  *   buffer_size 字节序的字节大小
@@ -343,7 +343,7 @@ PCS_API int64_t pcs_get_download_filesize(Pcs handle, const char *path);
  * 使用完成后需调用 pcs_fileinfo_destroy() 方法释放。
  * 失败则返回 NULL。
  */
-PCS_API PcsFileInfo *pcs_upload_buffer(Pcs handle, const char *path, PcsBool overwrite,
+PCS_API PcsFileInfo *pcs_upload_buffer(Pcs handle, const char *path, pcsBool overwrite,
 	const char *buffer, size_t buffer_size, curl_off_t max_speed);
 
 /*
@@ -373,12 +373,12 @@ PCS_API PcsFileInfo *pcs_upload_slicefile(Pcs handle,
 	size_t content_size, curl_off_t max_speed);
 
 /*合并分片*/
-PCS_API PcsFileInfo *pcs_create_superfile(Pcs handle, const char *path, PcsBool overwrite, PcsSList *block_list);
+PCS_API PcsFileInfo *pcs_create_superfile(Pcs handle, const char *path, pcsBool overwrite, PcsSList *block_list);
 
 /*
  * 上传文件到网盘
  *   path		目标文件，地址需写全，如/temp/file.txt
- *   overwrite  指定是否覆盖原文件，传入PcsTrue则覆盖，传入PcsFalse，则会使用当前日期重命名。
+ *   overwrite  指定是否覆盖原文件，传入pcsTrue则覆盖，传入pcsFalse，则会使用当前日期重命名。
  *              例，如果文件file.txt以存在，则上传后新的文件自动变更为file20140117.txt
  *   local_filename 待上传的本地文件
  *   max_speed  最大上传速度
@@ -387,12 +387,12 @@ PCS_API PcsFileInfo *pcs_create_superfile(Pcs handle, const char *path, PcsBool 
  * 使用完成后需调用 pcs_fileinfo_destroy() 方法释放。
  * 失败则返回 NULL。
  */
-PCS_API PcsFileInfo *pcs_upload(Pcs handle, const char *path, PcsBool overwrite, 
+PCS_API PcsFileInfo *pcs_upload(Pcs handle, const char *path, pcsBool overwrite, 
 									   const char *local_filename, curl_off_t max_speed);
 /*
 * 上传文件到网盘
 *   to_path		  目标文件，地址需写全，如/temp/file.txt
-*   overwrite     指定是否覆盖原文件，传入PcsTrue则覆盖，传入PcsFalse，则会使用当前日期重命名。
+*   overwrite     指定是否覆盖原文件，传入pcsTrue则覆盖，传入pcsFalse，则会使用当前日期重命名。
 *                 例，如果文件file.txt以存在，则上传后新的文件自动变更为file20140117.txt
 *   read_func     读取文件的方法
 *   userdata	  程序本身不使用该参数，仅原样传递到 read_func 函数中
@@ -402,7 +402,7 @@ PCS_API PcsFileInfo *pcs_upload(Pcs handle, const char *path, PcsBool overwrite,
 * 使用完成后需调用 pcs_fileinfo_destroy() 方法释放。
 * 失败则返回 NULL。
 */
-PCS_API PcsFileInfo *pcs_upload_s(Pcs handle, const char *to_path, PcsBool overwrite,
+PCS_API PcsFileInfo *pcs_upload_s(Pcs handle, const char *to_path, pcsBool overwrite,
 	size_t(*read_func)(void *ptr, size_t size, size_t nmemb, void *userdata),
 	void *userdata,
 	size_t content_size, curl_off_t max_speed);
@@ -415,7 +415,7 @@ PCS_API int64_t pcs_local_filesize(Pcs handle, const char *path);
  *   path		目标文件
  *   md5        用于接收文件的md5值，长度必须大于等于32
  */
-PCS_API PcsBool pcs_md5_file(Pcs handle, const char *path, char *md5);
+PCS_API pcsBool pcs_md5_file(Pcs handle, const char *path, char *md5);
 
 /*
 * 计算文件的MD5值
@@ -423,7 +423,7 @@ PCS_API PcsBool pcs_md5_file(Pcs handle, const char *path, char *md5);
 *   userdata   原样传入 read_func
 *   md5        用于接收文件的md5值，长度必须大于等于32
 */
-PCS_API PcsBool pcs_md5_s(Pcs handle,
+PCS_API pcsBool pcs_md5_s(Pcs handle,
 	size_t(*read_func)(void *ptr, size_t size, size_t nmemb, void *userdata),
 	void *userdata,
 	char *md5_buf);
@@ -433,21 +433,21 @@ PCS_API PcsBool pcs_md5_s(Pcs handle,
 *   path		目标文件
 *   md5        用于接收文件的md5值，长度必须大于等于32
 */
-PCS_API PcsBool pcs_md5_file_slice(Pcs handle, const char *path, int64_t offset, int64_t length, char *md5_buf);
+PCS_API pcsBool pcs_md5_file_slice(Pcs handle, const char *path, int64_t offset, int64_t length, char *md5_buf);
 
 
 /*
  * 快速上传
  *   path		目标文件
- *   overwrite  指定是否覆盖原文件，传入PcsTrue则覆盖，传入PcsFalse，则会使用当前日期重命名。
+ *   overwrite  指定是否覆盖原文件，传入pcsTrue则覆盖，传入pcsFalse，则会使用当前日期重命名。
  *              例，如果文件file.txt以存在，则上传后新的文件自动变更为file20140117.txt
  *   local_filename 待上传的本地文件
  *   content_md5    用于接收文件的md5值，长度必须大于等于32。可传入NULL。
  *   slice_md5      用于接收验证文件的分片的md5值，长度必须大于等于32。可传入NULL。
  */
-PCS_API PcsFileInfo *pcs_rapid_upload(Pcs handle, const char *path, PcsBool overwrite,
+PCS_API PcsFileInfo *pcs_rapid_upload(Pcs handle, const char *path, pcsBool overwrite,
 	const char *local_filename, char *content_md5, char *slice_md5);
-PCS_API PcsFileInfo *pcs_rapid_upload_r(Pcs handle, const char *path, PcsBool overwrite,
+PCS_API PcsFileInfo *pcs_rapid_upload_r(Pcs handle, const char *path, pcsBool overwrite,
 	int64_t content_length, const char *content_md5, const char *slice_md5);
 
 /*
